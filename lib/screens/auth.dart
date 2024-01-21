@@ -137,7 +137,7 @@ class _AuthState extends State<Auth> {
                         ),
                         TextFormField(
                           decoration: const InputDecoration(
-                            labelText: "Ad",
+                            labelText: "Kullanıcı Adı",
                           ),
                           onSaved: (newValue) {
                             _username = newValue!;
