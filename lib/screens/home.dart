@@ -114,11 +114,13 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Firebase ChatApp",
-            style: TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
-                fontFamily: AutofillHints.countryName)),
+        title: const Text(
+          "Firebase ChatApp",
+          style: TextStyle(
+            color: Colors.green,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           IconButton(
             onPressed: () {
@@ -128,241 +130,281 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
+      body: Stack(
+        children: [
+          Image.asset(
+            "assets/login.jpg",
+            fit: BoxFit.cover,
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+          ),
+          SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    foregroundImage:
-                        _imageUrl == null ? null : NetworkImage(_imageUrl!),
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        _pickImage();
-                      },
-                      child: Text("Resim Seç",
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        foregroundImage:
+                            _imageUrl == null ? null : NetworkImage(_imageUrl!),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          _pickImage();
+                        },
+                        child: Text(
+                          "Resim Seç",
                           style: TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15))),
-                  _pickedFile != null
-                      ? ElevatedButton(
-                          onPressed: () {
-                            _upload();
-                          },
-                          child: Text("Resim Yükle"))
-                      : Container(),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 3, color: Colors.black12),
-                      borderRadius: BorderRadius.circular(8.0)),
-                  height: MediaQuery.of(context).size.height * 0.65,
-                  width: MediaQuery.of(context).size.width * 0.92,
-                  child: FutureBuilder(
-                    future: _getMessages(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return ListView.builder(
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            if (snapshot.data![index].userId ==
-                                firebaseAuthInstance.currentUser!.uid) {
-                              return Padding(
-                                padding: const EdgeInsets.all(6.0),
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width* 0.70,
-                                    margin: EdgeInsets.all(4.0),
-                                    padding: EdgeInsets.all(4.0),
-                                    decoration: BoxDecoration(
-                                        color: Colors.yellow,
-                                        border: Border.all(
-                                            width: 1, color: Colors.blue),
-                                        borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(8.0),
-                                            topLeft: Radius.circular(8.0),
-                                            bottomLeft: Radius.circular(8.0))),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              snapshot.data![index].message,
-                                              style: TextStyle(
-                                                  color: Colors.blue,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                                style: TextStyle(fontSize: 12),
-                                                formatter
-                                                    .format(DateTime
-                                                        .fromMillisecondsSinceEpoch(
-                                                            snapshot
-                                                                .data![index]
-                                                                .date
-                                                                .millisecondsSinceEpoch))
-                                                    .toString()),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return Padding(
-                                padding: const EdgeInsets.all(6.0),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width* 0.70,
-                                    margin: EdgeInsets.all(4.0),
-                                    padding: EdgeInsets.all(4.0),
-                                    decoration: BoxDecoration(
-                                        color: Colors.blue,
-                                        border: Border.all(
-                                            width: 1, color: Colors.yellow),
-                                        borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(8.0),
-                                            topLeft: Radius.circular(8.0),
-                                            bottomRight: Radius.circular(8.0))),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            FutureBuilder(
-                                              future: _getUserEmail(
-                                                  snapshot.data![index].userId),
-                                              builder: (context, value) {
-                                                if (value.hasData) {
-                                                  return Text(
-                                                    value.data!,
-                                                    style:
-                                                        TextStyle(fontSize: 12),
-                                                  );
-                                                } else if (value.hasError) {
-                                                  return Text(
-                                                    "Bir şeyler yanlış gitti",
-                                                    style:
-                                                        TextStyle(fontSize: 10),
-                                                  );
-                                                }
-                                                return Text(
-                                                  "Yükleniyor",
-                                                  style:
-                                                      TextStyle(fontSize: 10),
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Text(
-                                              snapshot.data![index].message,
-                                              style: TextStyle(
-                                                  color: Colors.yellow,
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                style: TextStyle(fontSize: 10),
-                                                formatter
-                                                    .format(DateTime
-                                                        .fromMillisecondsSinceEpoch(
-                                                            snapshot
-                                                                .data![index]
-                                                                .date
-                                                                .millisecondsSinceEpoch))
-                                                    .toString()),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        );
-                      } else if (snapshot.hasError) {
-                        return const Text("Bir şeyler yanlış gitti.");
-                      }
-                      return const CircularProgressIndicator();
-                    },
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(
-                    16.0), // Daha büyük bir iç kenar boşluğu ekledik.
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: messageController,
-                        decoration: InputDecoration(
-                          hintText: 'Mesajınız...',
-                          border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8.0)),
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
                           ),
                         ),
-                        keyboardType: TextInputType
-                            .text, // Klavye türünü metin olarak güncelledik.
+                      ),
+                      _pickedFile != null
+                          ? ElevatedButton(
+                              onPressed: () {
+                                _upload();
+                              },
+                              child: Text("Resim Yükle"),
+                            )
+                          : Container(),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 3, color: Colors.black12),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      height: MediaQuery.of(context).size.height * 0.65,
+                      width: MediaQuery.of(context).size.width * 0.92,
+                      child: FutureBuilder(
+                        future: _getMessages(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return ListView.builder(
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                if (snapshot.data![index].userId ==
+                                    firebaseAuthInstance.currentUser!.uid) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width *
+                                            0.70,
+                                        margin: EdgeInsets.all(4.0),
+                                        padding: EdgeInsets.all(4.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.yellow,
+                                          border: Border.all(
+                                            width: 1,
+                                            color: Colors.blue,
+                                          ),
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(8.0),
+                                            topLeft: Radius.circular(8.0),
+                                            bottomLeft: Radius.circular(8.0),
+                                          ),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  snapshot.data![index].message,
+                                                  style: TextStyle(
+                                                    color: Colors.blue,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  formatter
+                                                      .format(
+                                                        DateTime
+                                                            .fromMillisecondsSinceEpoch(
+                                                          snapshot
+                                                              .data![index]
+                                                              .date
+                                                              .millisecondsSinceEpoch,
+                                                        ),
+                                                      )
+                                                      .toString(),
+                                                  style:
+                                                      TextStyle(fontSize: 12),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width *
+                                            0.70,
+                                        margin: EdgeInsets.all(4.0),
+                                        padding: EdgeInsets.all(4.0),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          border: Border.all(
+                                            width: 1,
+                                            color: Colors.yellow,
+                                          ),
+                                                                                   borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(8.0),
+                                            topLeft: Radius.circular(8.0),
+                                            bottomRight: Radius.circular(8.0),
+                                          ),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                FutureBuilder(
+                                                  future: _getUserEmail(
+                                                      snapshot.data![index].userId),
+                                                  builder: (context, value) {
+                                                    if (value.hasData) {
+                                                      return Text(
+                                                        value.data!,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                        ),
+                                                      );
+                                                    } else if (value.hasError) {
+                                                      return Text(
+                                                        "Bir şeyler yanlış gitti",
+                                                        style: TextStyle(
+                                                          fontSize: 10,
+                                                        ),
+                                                      );
+                                                    }
+                                                    return Text(
+                                                      "Yükleniyor",
+                                                      style: TextStyle(
+                                                        fontSize: 10,
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  snapshot.data![index].message,
+                                                  style: TextStyle(
+                                                    color: Colors.yellow,
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  formatter
+                                                      .format(
+                                                        DateTime
+                                                            .fromMillisecondsSinceEpoch(
+                                                              snapshot
+                                                                  .data![index]
+                                                                  .date
+                                                                  .millisecondsSinceEpoch,
+                                                            ),
+                                                      )
+                                                      .toString(),
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text("Bir şeyler yanlış gitti.");
+                          }
+                          return CircularProgressIndicator();
+                        },
                       ),
                     ),
-                    SizedBox(
-                      width: 10.0, // Daha büyük bir boşluk ekledik.
-                    ),
-                    CircleAvatar(
-                        backgroundColor:
-                            Colors.green, // Daha belirgin bir renk seçtik.
-                        child: IconButton(
-                          onPressed: () {
-                            _submitMessage();
-                          },
-                          icon: Icon(
-                            Icons.send,
-                            color: Colors
-                                .white, // Gönderme düğmesinin rengini beyaz yaptık.
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: messageController,
+                            decoration: InputDecoration(
+                              hintText: 'Mesajınız...',
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.0)),
+                              ),
+                            ),
+                            keyboardType: TextInputType.text,
                           ),
-                        ))
-                  ],
-                ),
+                        ),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                        CircleAvatar(
+                          backgroundColor: Colors.green,
+                          child: IconButton(
+                            onPressed: () {
+                              _submitMessage();
+                            },
+                            icon: Icon(
+                              Icons.send,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 }
+

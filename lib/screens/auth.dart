@@ -87,114 +87,132 @@ class _AuthState extends State<Auth> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                decoration: BoxDecoration(
-                    color: Colors.white12,
-                    borderRadius: BorderRadius.circular(8),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        spreadRadius: 2,
-                        blurRadius: 7,
-                        offset: const Offset(0, 3),
-                      )
-                    ]),
-                child: Padding(
-                  padding: const EdgeInsets.all(
-                      16.0), // Daha büyük bir iç kenar boşluğu ekledik.
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            labelText:
-                                "E-Mail", // "label" özelliğini "labelText" olarak güncelledik.
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white, // Arka plan rengi
+    body: Center(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Image.asset(
+            "assets/login.jpg",
+            fit: BoxFit.cover, // Resmi tam ekran yapmak için
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+          ), // Arka plan resmi
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Card(
+                  color: Colors.blueAccent[100], // Kart arka plan rengi
+                  elevation: 5,
+                  margin: EdgeInsets.all(20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "E-Mail",
+                            ),
+                            keyboardType: TextInputType.emailAddress,
+                            onSaved: (newValue) {
+                              _email = newValue!;
+                            },
                           ),
-                          keyboardType: TextInputType.emailAddress,
-                          onSaved: (newValue) {
-                            _email = newValue!;
-                          },
-                        ),
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            labelText:
-                                "Şifre", // "label" özelliğini "labelText" olarak güncelledik.
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "Şifre",
+                            ),
+                            autocorrect: false,
+                            obscureText: true,
+                            keyboardType: TextInputType.visiblePassword,
+                            onSaved: (newValue) {
+                              _password = newValue!;
+                            },
                           ),
-                          autocorrect: false,
-                          obscureText: true,
-                          keyboardType: TextInputType.visiblePassword,
-                          onSaved: (newValue) {
-                            _password = newValue!;
-                          },
-                        ),
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            labelText: "Kullanıcı Adı",
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "Kullanıcı Adı",
+                            ),
+                            onSaved: (newValue) {
+                              _username = newValue!;
+                            },
                           ),
-                          onSaved: (newValue) {
-                            _username = newValue!;
-                          },
-                        ),
-                        SizedBox(
-                          height: 20.0, // Daha büyük bir boşluk ekledik.
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            submitForm();
-                          },
-                          child: Text(_isLogin ? "Giriş Yap" : "Kayıt Ol"),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isLogin = !_isLogin;
-                            });
-                          },
-                          child: Text(
-                            _isLogin
-                                ? "Kayıt Sayfasına Git"
-                                : "Giriş Sayfasına Git", // Metinleri güncelledik.
-                            style: TextStyle(
-                              color:
-                                  Colors.blue, // Daha belirgin bir renk seçtik.
+                          SizedBox(
+                            height: 20.0,
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green, // Buton rengi
+                            ),
+                            onPressed: () {
+                              submitForm();
+                            },
+                            child: Text(
+                              _isLogin ? "Giriş Yap" : "Kayıt Ol",
+                              style: TextStyle(color: Colors.white), // Buton metin rengi
                             ),
                           ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            signInWithGoogle();
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/google_icon.png",
-                                width: MediaQuery.of(context).size.width * 0.06,
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _isLogin = !_isLogin;
+                              });
+                            },
+                            child: Text(
+                              _isLogin
+                                  ? "Kayıt Sayfasına Git"
+                                  : "Giriş Sayfasına Git",
+                              style: TextStyle(
+                                color: Colors.black,
                               ),
-                              SizedBox(
-                                width: 10.0, // Daha büyük bir boşluk ekledik.
-                              ),
-                              Text("Google ile Giriş Yap"),
-                            ],
+                            ),
                           ),
-                        ),
-                      ],
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red, // Buton rengi
+                            ),
+                            onPressed: () {
+                              signInWithGoogle();
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  "assets/google_icon.png",
+                                  width: MediaQuery.of(context).size.width *
+                                      0.06,
+                                  color: Colors.black,
+                                ),
+                                SizedBox(
+                                  width: 10.0,
+                                ),
+                                Text(
+                                  "Google ile Giriş Yap",
+                                  style: TextStyle(
+                                      color: Colors.white), // Buton metin rengi
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 }
