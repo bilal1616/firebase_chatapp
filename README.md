@@ -1,10 +1,11 @@
 # firebase_chatapp
 
-A new Flutter project.
+Flutter ile geliştirilmiş, kullanıcı kayıt giriş işlemleri ve mesajlaşma depolaması firebase tarafından kaydedilip kontrol edilen mobil chat uygulamasıdır.
 
-## Getting Started
-
-
+## Proje içeriği
+- Firebase auth
+- Firebase firestore
+- Firebase storage
 
 <img src="assets/login.png" alt="alt text" height="400">
 <img src="assets/login1.png" alt="alt text" height="400">
