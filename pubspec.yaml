@@ -41,7 +41,7 @@ dependencies:
   image_picker: ^1.0.7
   google_sign_in: ^6.2.1
   cloud_firestore: ^4.14.0
-  intl: ^0.19.0
+
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +71,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/
+    - assets/image1.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

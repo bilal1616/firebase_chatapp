@@ -18,7 +18,7 @@ class _AuthState extends State<Auth> {
   var _isLogin = true;
   var _email = "";
   var _password = "";
-  var _username = ""; // Kullanıcı adını saklamak için bir değişken
+  var _username = ""; 
 
   void submitForm() async {
     _formKey.currentState!.save();
@@ -32,26 +32,21 @@ class _AuthState extends State<Auth> {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(e.message!)));
       }
-    } // Kullanıcı kaydı için
-// submitForm fonksiyonu içinde, kayıt işlemi bölümü
-
-    else {
+    } else {
       try {
         final userCredentials = await firebaseAuthInstance
             .createUserWithEmailAndPassword(email: _email, password: _password);
 
-        // Firestore'a kullanıcı bilgilerini kaydet
         await firebaseFireStoreInstance
             .collection("users")
             .doc(userCredentials.user!.uid)
             .set({
           'email': _email,
-          'name': _username, // Kullanıcının girdiği adı buraya ekleyin
+          'name': _username,
         });
-      } on FirebaseAuthException {
-        // FirebaseAuthException hatası oluştuğunda yapılacak işlemler
+      } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Kayıt işlemi sırasında bir hata oluştu')),
+          SnackBar(content: Text(e.message!)),
         );
       }
     }
@@ -70,15 +65,13 @@ class _AuthState extends State<Auth> {
           await firebaseAuthInstance.signInWithCredential(googleCredential);
       print(userCredential);
 
-      // Google'dan gelen kullanıcı bilgilerini Firestore'a kaydetmek
       firebaseFireStoreInstance
           .collection("users")
           .doc(userCredential.user!.uid)
           .set({
         'email': userCredential.user!.email,
-        'name': userCredential.user!.displayName, // Kullanıcının adını alıyoruz
-        'imageUrl': userCredential
-            .user!.photoURL, // Kullanıcının profil resmini alıyoruz
+        'name': userCredential.user!.displayName,
+        'imageUrl': userCredential.user!.photoURL,
       });
     } on FirebaseAuthException catch (e) {
       ScaffoldMessenger.of(context)
@@ -87,132 +80,128 @@ class _AuthState extends State<Auth> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white, // Arka plan rengi
-    body: Center(
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Image.asset(
-            "assets/login.jpg",
-            fit: BoxFit.cover, // Resmi tam ekran yapmak için
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-          ), // Arka plan resmi
-          SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Card(
-                  color: Colors.blueAccent[100], // Kart arka plan rengi
-                  elevation: 5,
-                  margin: EdgeInsets.all(20),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: "E-Mail",
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Image.asset(
+              "assets/login.jpg",
+              fit: BoxFit.cover,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+            ),
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Card(
+                    color: Color.fromARGB(255, 252, 247, 238),
+                    elevation: 5,
+                    margin: EdgeInsets.all(20),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: "E-Mail",
+                              ),
+                              keyboardType: TextInputType.emailAddress,
+                              onSaved: (newValue) {
+                                _email = newValue!;
+                              },
                             ),
-                            keyboardType: TextInputType.emailAddress,
-                            onSaved: (newValue) {
-                              _email = newValue!;
-                            },
-                          ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: "Şifre",
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: "Şifre",
+                              ),
+                              autocorrect: false,
+                              obscureText: true,
+                              keyboardType: TextInputType.visiblePassword,
+                              onSaved: (newValue) {
+                                _password = newValue!;
+                              },
                             ),
-                            autocorrect: false,
-                            obscureText: true,
-                            keyboardType: TextInputType.visiblePassword,
-                            onSaved: (newValue) {
-                              _password = newValue!;
-                            },
-                          ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: "Kullanıcı Adı",
+                            if (!_isLogin)
+                              TextFormField(
+                                decoration: const InputDecoration(
+                                  labelText: "Kullanıcı Adı",
+                                ),
+                                onSaved: (newValue) {
+                                  _username = newValue!;
+                                },
+                              ),
+                            SizedBox(
+                              height: 20.0,
                             ),
-                            onSaved: (newValue) {
-                              _username = newValue!;
-                            },
-                          ),
-                          SizedBox(
-                            height: 20.0,
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green, // Buton rengi
-                            ),
-                            onPressed: () {
-                              submitForm();
-                            },
-                            child: Text(
-                              _isLogin ? "Giriş Yap" : "Kayıt Ol",
-                              style: TextStyle(color: Colors.white), // Buton metin rengi
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _isLogin = !_isLogin;
-                              });
-                            },
-                            child: Text(
-                              _isLogin
-                                  ? "Kayıt Sayfasına Git"
-                                  : "Giriş Sayfasına Git",
-                              style: TextStyle(
-                                color: Colors.black,
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                              ),
+                              onPressed: () {
+                                submitForm();
+                              },
+                              child: Text(
+                                _isLogin ? "Giriş Yap" : "Kayıt Ol",
+                                style: TextStyle(color: Colors.white),
                               ),
                             ),
-                          ),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red, // Buton rengi
-                            ),
-                            onPressed: () {
-                              signInWithGoogle();
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  "assets/google_icon.png",
-                                  width: MediaQuery.of(context).size.width *
-                                      0.06,
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isLogin = !_isLogin;
+                                });
+                              },
+                              child: Text(
+                                _isLogin ? "Kayıt Sayfasına Git" : "Giriş Sayfasına Git",
+                                style: TextStyle(
                                   color: Colors.black,
                                 ),
-                                SizedBox(
-                                  width: 10.0,
-                                ),
-                                Text(
-                                  "Google ile Giriş Yap",
-                                  style: TextStyle(
-                                      color: Colors.white), // Buton metin rengi
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                        ],
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                              ),
+                              onPressed: () {
+                                signInWithGoogle();
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/google_icon.png",
+                                    width: MediaQuery.of(context).size.width * 0.08,
+                                  ),
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                  Text(
+                                    "Google ile Giriş Yap",
+                                    style: TextStyle(color: Colors.grey[700]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
-}
