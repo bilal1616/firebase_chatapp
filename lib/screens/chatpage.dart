@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebaseexampleapp/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 class ChatPage extends StatefulWidget {
   final String recipientUid;
@@ -43,46 +45,18 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            // Profil resmi için FutureBuilder kullanarak imageUrl'i al
-            FutureBuilder<DocumentSnapshot>(
-              future: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(widget.recipientUid)
-                  .get(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  // Veri alınıyorsa bir yüklenme göster
-                  return CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  // Hata varsa hata mesajı göster
-                  return Text('Hata: ${snapshot.error}');
-                } else {
-                  // Veri alındıysa imageUrl alanını kontrol et
-                  final data = snapshot.data!.data() as Map<String, dynamic>;
-                  final imageUrl = data['imageUrl'];
-                  // imageUrl alanı var mı kontrol et
-                  if (imageUrl != null) {
-                    // Profil resmi varsa göster
-                    return CircleAvatar(
-                      backgroundImage: NetworkImage(imageUrl),
-                    );
-                  } else {
-                    // Profil resmi yoksa varsayılan bir avatar göster
-                    return CircleAvatar(
-                      child: Icon(Icons.account_circle),
-                    );
-                  }
-                }
-              },
+            CircleAvatar(
+              backgroundImage:
+                  userProvider.imageUrl == null ? null : NetworkImage(userProvider.imageUrl!),
             ),
-
-            SizedBox(width: 8), // Bir boşluk ekleyelim
+            SizedBox(width: 8),
             Text(
-              widget.recipientName, // Kullanıcı adını kullan
+              widget.recipientName,
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,

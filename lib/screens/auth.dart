@@ -20,7 +20,7 @@ class _AuthState extends State<Auth> {
   var _password = "";
   var _username = ""; 
 
-  void submitForm() async {
+  void submitForm(BuildContext context) async {
     _formKey.currentState!.save();
 
     if (_isLogin) {
@@ -52,7 +52,7 @@ class _AuthState extends State<Auth> {
     }
   }
 
-  void signInWithGoogle() async {
+  void signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication? googleAuth =
@@ -146,7 +146,7 @@ class _AuthState extends State<Auth> {
                                 backgroundColor: Colors.green,
                               ),
                               onPressed: () {
-                                submitForm();
+                                submitForm(context);
                               },
                               child: Text(
                                 _isLogin ? "Giriş Yap" : "Kayıt Ol",
@@ -171,7 +171,7 @@ class _AuthState extends State<Auth> {
                                 backgroundColor: Colors.white,
                               ),
                               onPressed: () {
-                                signInWithGoogle();
+                                signInWithGoogle(context);
                               },
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -204,4 +204,3 @@ class _AuthState extends State<Auth> {
     );
   }
 }
-

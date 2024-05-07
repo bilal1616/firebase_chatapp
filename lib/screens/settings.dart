@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebaseexampleapp/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -16,23 +18,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   File? _pickedFile;
   String? _imageUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _getUserImage();
-  }
-
-  void _getUserImage() async {
-    final user = FirebaseAuth.instance.currentUser;
-    final document =
-        FirebaseFirestore.instance.collection("users").doc(user!.uid);
-    final docSnapshot = await document.get();
-
-    setState(() {
-      _imageUrl = docSnapshot.get("imageUrl");
-    });
-  }
 
   void _pickImage(ImageSource source) async {
     final image = await ImagePicker().pickImage(
@@ -76,6 +61,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
