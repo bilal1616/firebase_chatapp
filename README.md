@@ -1,4 +1,4 @@
-# firebase_chatapp
+# Let's Talk Mesajlaşma Uygulaması (firebase_chatapp)
 
 Flutter ile geliştirilmiş provider mimarisi kullanılarak state yönetimleri sağlanan, kullanıcı kayıt giriş işlemleri ve mesajlaşma depolaması firebase tarafından kaydedilip kontrol edilen mobil chat uygulamasıdır.
 
